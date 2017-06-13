@@ -3,11 +3,17 @@
 #include "ui/CocosGUI.h"
 #endif
 
+#define SCREENLOG_IMPLEMENTATION
+#include "ScreenLog.h"
+
 USING_NS_CC;
 using namespace sdkbox;
 
 #define kLevelLeaderBoardId "1434"
 #define kSoldierAchievementId "3622"
+
+#undef CCLOG
+#define CCLOG INFO
 
 template <typename T> std::string tostr(const T& t) { std::ostringstream os; os<<t; return os.str(); }
 
@@ -21,6 +27,10 @@ Scene* HelloWorld::createScene()
 
     // add layer as a child to scene
     scene->addChild(layer);
+
+    ScreenLog::getInstance()->setLevelMask( LL_DEBUG | LL_INFO | LL_WARNING | LL_ERROR | LL_FATAL );
+    ScreenLog::getInstance()->setTimeoutSeconds( 0xFFFF );
+    ScreenLog::getInstance()->attachToScene( scene );
 
     // return the scene
     return scene;
@@ -155,6 +165,9 @@ void HelloWorld::onSuccess(const Product &p)
     }
 
     CCLOG("Purchase Success: %s", p.id.c_str());
+    INFO("receiptCipheredPayload=%s", p.receiptCipheredPayload.c_str());
+    INFO("receipt=%s", p.receipt.c_str());
+    INFO("transactionID=%s", p.transactionID.c_str());
 }
 
 void HelloWorld::onFailure(const Product &p, const std::string &msg)
